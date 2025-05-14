@@ -1,0 +1,77 @@
+{
+    "mver": "1.2.0",
+    "control": {
+        "identity": {
+            "name": "DropDown",
+            "version": "1.0",
+            "displayname": "DropDown",
+            "icon": "./assets/Drop_Down.png",
+            "type": "guid://FC5B3189-154C-4525-B9FE-7B933236BB2D",
+            "start": "./control/index.html"
+        },
+        "metadata": {
+            "author": "AArzen",
+            "keywords": []
+        },
+        "contracts": {
+            "api": {
+                "methods": {},
+                "events": {
+                    "selected": {
+                        "description": "Selected item from the dropdown",
+                        "arguments": {
+                            "rowId": {
+                                "type": "string",
+                                "default": ""
+                            }
+                        }
+                    }
+                },
+                "properties": {
+                    "rows": {
+                        "type": "string",
+                        "default": "[]"
+                    },
+                    "current": {
+                        "type": "string",
+                        "default": ""
+                    },
+                    "Width": {
+                        "type": "number",
+                        "default": 250
+                    },
+                    "Height": {
+                        "type": "number",
+                        "default": 30
+                    },
+                    "FontSize": {
+                        "type": "string",
+                        "default": "15px"
+                    },
+                    "ColorBackground": {
+                        "$ref": "#/control/types/Color",
+                        "default": 4280090643
+                    },
+                    "ColorHover": {
+                        "$ref": "#/control/types/Color",
+                        "default": 4281608376
+                    },
+                    "ColorText": {
+                        "$ref": "#/control/types/Color",
+                        "default": 4294967295
+                    },
+                    "VisibleItems": {
+                        "type": "number",
+                        "default": 5
+                    }
+                }
+            }
+        },
+        "types": {
+            "Color": {
+                "$id": "http://tia.siemens.com/wincc-unified/types/s/color",
+                "type": "number"
+            }
+        }
+    }
+}

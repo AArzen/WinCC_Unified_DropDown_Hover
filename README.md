@@ -68,13 +68,13 @@ Example event handler in WinCC Unified JavaScript:
 
 ```javascript
 export function DropDown_1_Onselected(item, rowId) {
-try {
- HMIRuntime.Trace("Data: " + rowId);
- rowId = JSON.parse(rowId);
- HMIRuntime.Trace("Data ID: " + rowId.ID + " Data Text: " + rowId.Text);
-} catch (e) {
- HMIRuntime.Trace("Error: " + e);
-}
+    try {
+        HMIRuntime.Trace("Data: " + rowId);
+        rowId = JSON.parse(rowId);
+        HMIRuntime.Trace("Data ID: " + rowId.ID + " Data Text: " + rowId.Text);
+    } catch (e) {
+        HMIRuntime.Trace("Error: " + e);
+    }
 }
 ```
 

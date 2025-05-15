@@ -44,7 +44,7 @@ function applyStyles(props) {
         wrapper.style.width = width + "px";
         wrapper.style.height = height + "px";
         wrapper.style.fontSize = fontSize + "px";
-        wrapper.style.lineHeight = height + "px";
+        wrapper.style.lineHeight = fontSize * 1.2 + "px";
         wrapper.style.fontFamily = "inherit";
     }
 }

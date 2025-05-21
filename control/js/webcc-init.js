@@ -1,10 +1,10 @@
 WebCC.start(
     function (ok) {
         if (ok) {
-            console.log("✅ WebCC connected");
+            console.log("✅ WebCC connected - DropDown_Hover");
             unifiedInterfaceInit();
         } else {
-            console.error("❌ WebCC connection failed");
+            console.error("❌ WebCC connection failed - DropDown_Hover");
         }
     },
     {

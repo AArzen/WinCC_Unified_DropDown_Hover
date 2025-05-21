@@ -3,6 +3,17 @@ const _timeout = 1000;
 
 let isDropdownOpen = false;
 let optionsContainer = null;
+let isMouseOverWrapper = false;
+let isMouseOverDropdown = false;
+
+let lastMouseX = 0;
+let lastMouseY = 0;
+let closeCheckInterval = null;
+
+document.addEventListener("mousemove", (e) => {
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+});
 
 function toColor(num) {
     num >>>= 0;
@@ -116,6 +127,12 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
             optionsContainer = null;
             isDropdownOpen = false;
             arrow?.classList.remove("open");
+
+            // Stop interval check
+            if (closeCheckInterval) {
+                clearInterval(closeCheckInterval);
+                closeCheckInterval = null;
+            }
         });
 
         dropdown.appendChild(option);
@@ -126,7 +143,7 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
     const scrollTop = window.parent.scrollY || 0;
     const localScaleFixHeight = rect.height * (frameRect?.height / frame.offsetHeight);
     const scaleFixTop = rect.top * (frameRect?.height / frame.offsetHeight);
-    const globalTop = scaleFixTop + localScaleFixHeight + iframeRect.top + scrollTop;
+    const globalTop = scaleFixTop + localScaleFixHeight + iframeRect.top + scrollTop - 5;
     const globalLeft = rect.left + iframeRect.left;
 
     dropdown.style.position = "absolute";
@@ -150,38 +167,72 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
     isDropdownOpen = true;
     arrow?.classList.add("open");
 
-    let hoverTimeout;
+    // Listner for mouse
+    selectedWrapper.addEventListener("mouseenter", () => {
+        isMouseOverWrapper = true;
+    });
+    selectedWrapper.addEventListener("mouseleave", () => {
+        isMouseOverWrapper = false;
+    });
 
-    function tryCloseDropdown() {
-        hoverTimeout = setTimeout(() => {
-            const isOverWrapper = selectedWrapper.matches(':hover');
-            const isOverDropdown = dropdown.matches(':hover');
+    dropdown.addEventListener("mouseenter", () => {
+        isMouseOverDropdown = true;
+    });
+    dropdown.addEventListener("mouseleave", () => {
+        isMouseOverDropdown = false;
+    });
 
-            if (!isOverWrapper && !isOverDropdown) {
-                dropdown.remove();
-                optionsContainer = null;
-                isDropdownOpen = false;
+    //console.log("Dropdown OPENED");
 
-                if (arrow) {
-                    arrow.classList.remove("open");
-                }
-            } else {
-                if (arrow) {
-                    arrow.classList.add("open");
-                }
-            }
-        }, 50);
+    // frobid more internal at the same time
+    if (closeCheckInterval) {
+        clearInterval(closeCheckInterval);
+        closeCheckInterval = null;
     }
 
-    selectedWrapper.addEventListener("mouseleave", tryCloseDropdown);
-    dropdown.addEventListener("mouseleave", tryCloseDropdown);
+    closeCheckInterval = setInterval(() => {
+        /*console.log("Interval Check (hover flags):", {
+            isMouseOverWrapper,
+            isMouseOverDropdown
+        });*/
 
-    selectedWrapper.addEventListener("mouseenter", () => {
-        clearTimeout(hoverTimeout);
-    });
-    dropdown.addEventListener("mouseenter", () => {
-        clearTimeout(hoverTimeout);
-    });
+        if (!isMouseOverWrapper && !isMouseOverDropdown) {
+            //console.log("Dropdown CLOSED (hover flags)");
+            dropdown.remove();
+            optionsContainer = null;
+            isDropdownOpen = false;
+            arrow?.classList.remove("open");
+
+            clearInterval(closeCheckInterval);
+            closeCheckInterval = null;
+        }
+    }, 150);
+
+
+    // close when click outside
+    const onClickOutside = (e) => {
+        const target = e.target;
+        if (
+            !dropdown.contains(target) &&
+            !selectedWrapper.contains(target)
+        ) {
+            console.log("Dropdown CLOSED (outside click)");
+
+            dropdown.remove();
+            optionsContainer = null;
+            isDropdownOpen = false;
+            arrow?.classList.remove("open");
+
+            if (closeCheckInterval) {
+                clearInterval(closeCheckInterval);
+                closeCheckInterval = null;
+            }
+
+            document.removeEventListener("mousedown", onClickOutside);
+        }
+    };
+
+    document.addEventListener("mousedown", onClickOutside);
 
 }
 
@@ -270,7 +321,7 @@ function unifiedInterfaceInit() {
                 optionsContainer.remove();
                 optionsContainer = null;
                 isDropdownOpen = false;
-                console.log("DropDown: closed due to onDestroy");
+                //console.log("DropDown: closed due to onDestroy");
             }
         });
     }
@@ -281,10 +332,10 @@ function unifiedInterfaceInit() {
                 optionsContainer.remove();
                 optionsContainer = null;
                 isDropdownOpen = false;
-                console.log("DropDown: closed due to onScreenChanged");
+                //console.log("DropDown: closed due to onScreenChanged");
             }
         });
     }
 
-    console.log("DropDown: initialized with properties", WebCC.Properties);
+    //console.log("DropDown: initialized with properties", WebCC.Properties);
 }

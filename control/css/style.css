@@ -36,7 +36,7 @@ body {
     justify-content: space-between;
     padding: 5px 10px;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 0px solid #ccc;
     box-sizing: border-box;
     cursor: pointer;
     user-select: none;
@@ -60,9 +60,8 @@ body {
     position: absolute;
     background-color: var(--dropdown-bg);
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 0px solid #ccc;
     overflow-y: auto;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     z-index: 100000;
     max-height: 400px;
     opacity: 0;

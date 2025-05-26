@@ -87,6 +87,7 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
     dropdown.style.fontFamily = getComputedStyle(selectedWrapper).fontFamily;
     dropdown.style.width = `${scaleFixWidth}px`;
     dropdown.style.borderRadius = getComputedStyle(selectedWrapper).borderRadius || "5px";
+    dropdown.style.border = "2px solid black";
 
     const maxVisible = props.VisibleItems || 5;
     const verticalPadding = 5 * 2;
@@ -138,12 +139,16 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
         dropdown.appendChild(option);
     });
 
+
+    const estimatedDropdownHeight = Math.min(maxVisible * oneItemHeight, rows.length * oneItemHeight);
+
     const rect = selectedWrapper.getBoundingClientRect();
     const iframeRect = window.frameElement?.getBoundingClientRect() || { top: 0, left: 0 };
     const scrollTop = window.parent.scrollY || 0;
     const localScaleFixHeight = rect.height * (frameRect?.height / frame.offsetHeight);
     const scaleFixTop = rect.top * (frameRect?.height / frame.offsetHeight);
-    const globalTop = scaleFixTop + localScaleFixHeight + iframeRect.top + scrollTop - 5;
+    //const globalTop = scaleFixTop + localScaleFixHeight + iframeRect.top + scrollTop - 5;
+    const globalTop = scaleFixTop + iframeRect.top + scrollTop;
     const globalLeft = rect.left + iframeRect.left;
 
     dropdown.style.position = "absolute";
@@ -206,7 +211,7 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
             clearInterval(closeCheckInterval);
             closeCheckInterval = null;
         }
-    }, 150);
+    }, 100);
 
 
     // close when click outside
@@ -270,7 +275,8 @@ function updateDropDown(props) {
     if (selectedWrapper.dataset.listenerSet) return;
     selectedWrapper.dataset.listenerSet = "true";
 
-    selectedWrapper.addEventListener("mouseenter", () => {
+    selectedWrapper.addEventListener("click", (e) => {
+        e.stopPropagation();
         createDropdown(props, selectedWrapper, selectedEl, arrow);
     });
 }

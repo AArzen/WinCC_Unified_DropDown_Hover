@@ -36,7 +36,7 @@ body {
     justify-content: space-between;
     padding: 5px 10px;
     border-radius: 5px;
-    border: 0px solid #ccc;
+    /*border: 1px solid black;*/
     box-sizing: border-box;
     cursor: pointer;
     user-select: none;
@@ -60,7 +60,8 @@ body {
     position: absolute;
     background-color: var(--dropdown-bg);
     border-radius: 5px;
-    border: 0px solid #ccc;
+    border: 5px solid black;
+    border-bottom: 5px solid rgba(0, 0, 0, 0.2);
     overflow-y: auto;
     z-index: 100000;
     max-height: 400px;
@@ -86,6 +87,10 @@ body {
     white-space: normal;
     word-break: break-word;
     padding: 5px 10px;
+}
+
+.dropdown-option:last-child {
+    border-bottom: none;
 }
 
 .dropdown-option:hover {

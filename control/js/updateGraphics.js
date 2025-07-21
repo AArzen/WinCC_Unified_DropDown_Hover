@@ -29,7 +29,12 @@ function applyStyles(props) {
 
     const width = props.Width || 250;
     const height = props.Height || 30;
-    const fontSize = parseFloat(props.FontSize || '15');
+    let fontSizeRaw = props.FontSize || "15px";
+    const fontSize = parseFloat(fontSizeRaw);
+    let fontWeight = "normal";
+
+    if (fontSizeRaw.toLowerCase().includes("bold")) { fontWeight = "bold" };
+
 
     const fontColor = WebCC?.Properties?.ColorText !== undefined
         ? toColor(WebCC.Properties.ColorText)
@@ -46,6 +51,7 @@ function applyStyles(props) {
     root.style.setProperty('--dropdown-width', width + 'px');
     root.style.setProperty('--dropdown-height', height + 'px');
     root.style.setProperty('--dropdown-font-size', fontSize + 'px');
+    root.style.setProperty('--dropdown-font-weight', fontWeight);
     root.style.setProperty('--dropdown-bg', bgColor);
     root.style.setProperty('--dropdown-hover-bg', hoverColor);
     root.style.setProperty('--dropdown-text-color', fontColor);
@@ -81,19 +87,24 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
     const scaleFixHeight = wrapperRect.height * (frameRect?.height / frame.offsetHeight);
     const scaleFixFontSize = baseFontSize * (frameRect?.height / frame.offsetHeight);
 
-    dropdown.style.backgroundColor = bgColor;
-    dropdown.style.color = textColor;
-    dropdown.style.fontSize = scaleFixFontSize + "px";
-    dropdown.style.fontFamily = getComputedStyle(selectedWrapper).fontFamily;
-    dropdown.style.width = `${scaleFixWidth}px`;
-    dropdown.style.borderRadius = getComputedStyle(selectedWrapper).borderRadius || "5px";
-    dropdown.style.border = "2px solid black";
-
+    // Max Height
     const maxVisible = props.VisibleItems || 5;
     const verticalPadding = 5 * 2;
     const lineHeightRatio = 1.2;
     const oneItemHeight = scaleFixFontSize * lineHeightRatio + verticalPadding;
-    dropdown.style.maxHeight = `${maxVisible * oneItemHeight}px`;
+    totalHeight = (maxVisible * oneItemHeight) + scaleFixHeight;
+
+    dropdown.style.backgroundColor = bgColor;
+    dropdown.style.color = textColor;
+    dropdown.style.fontSize = scaleFixFontSize + "px";
+    dropdown.style.fontFamily = getComputedStyle(selectedWrapper).fontFamily;
+    dropdown.style.paddingLeft = getComputedStyle(selectedWrapper).paddingLeft;
+    dropdown.style.paddingRight = getComputedStyle(selectedWrapper).paddingRight;
+    dropdown.style.boxSizing = getComputedStyle(selectedWrapper).boxSizing;
+    dropdown.style.width = `${scaleFixWidth}px`;
+    dropdown.style.borderRadius = getComputedStyle(selectedWrapper).borderRadius || "5px";
+    dropdown.style.border = "2px solid black";
+    dropdown.style.maxHeight = `${totalHeight}px`;
     dropdown.style.overflowY = "auto";
 
     let rows = [];
@@ -101,43 +112,77 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
         rows = typeof props.rows === "string" ? JSON.parse(props.rows) : props.rows;
     } catch { }
 
-    rows.forEach(row => {
-        const option = document.createElement("div");
-        option.className = "dropdown-option";
-        option.textContent = row.Text;
-        option.dataset.value = JSON.stringify(row);
-        option.style.backgroundColor = bgColor;
-        option.style.color = textColor;
-        option.style.fontSize = scaleFixFontSize + "px";
-        option.style.fontFamily = getComputedStyle(selectedWrapper).fontFamily;
-        option.style.whiteSpace = "normal";
-        option.style.wordBreak = "break-word";
 
-        option.addEventListener("mouseover", () => {
-            option.style.backgroundColor = hoverColor;
-        });
-        option.addEventListener("mouseout", () => {
+    // Create filter input
+    const filterInput = document.createElement("input");
+    filterInput.placeholder = "";
+    filterInput.className = "dropdown-filter-input";
+    filterInput.style.backgroundColor = bgColor;
+    filterInput.style.color = textColor;
+    filterInput.style.fontSize = scaleFixFontSize + "px";
+    filterInput.style.fontFamily = getComputedStyle(selectedWrapper).fontFamily;
+    filterInput.style.width = `${scaleFixWidth}px`;
+    filterInput.style.border = "none";
+    filterInput.style.outline = "none";
+    filterInput.style.height = `${scaleFixHeight}px`;
+    filterInput.style.lineHeight = `${scaleFixHeight}px`;
+    filterInput.style.padding = "0px 10px";
+    dropdown.appendChild(filterInput);
+
+
+    // Filter logic
+    let currentRows = [...rows];
+    function renderOptions(filteredRows) {
+        // Remove old options
+        dropdown.querySelectorAll(".dropdown-option").forEach(opt => opt.remove());
+
+        filteredRows.forEach(row => {
+            const option = document.createElement("div");
+            option.className = "dropdown-option";
+            option.textContent = row.Text;
+            option.dataset.value = JSON.stringify(row);
             option.style.backgroundColor = bgColor;
+            option.style.color = textColor;
+            option.style.fontSize = scaleFixFontSize + "px";
+            option.style.fontFamily = getComputedStyle(selectedWrapper).fontFamily;
+            option.style.whiteSpace = "normal";
+            option.style.wordBreak = "break-word";
+
+            option.addEventListener("mouseover", () => {
+                option.style.backgroundColor = hoverColor;
+            });
+            option.addEventListener("mouseout", () => {
+                option.style.backgroundColor = bgColor;
+            });
+
+            option.addEventListener("click", () => {
+                WebCC.Properties.current = JSON.stringify(row);
+                WebCC.Events.fire("selected", JSON.stringify(row));
+                selectedEl.textContent = row.Text;
+                dropdown.remove();
+                optionsContainer = null;
+                isDropdownOpen = false;
+                arrow?.classList.remove("open");
+
+                if (closeCheckInterval) {
+                    clearInterval(closeCheckInterval);
+                    closeCheckInterval = null;
+                }
+            });
+
+            dropdown.appendChild(option);
         });
+    }
 
-        option.addEventListener("click", () => {
-            WebCC.Properties.current = JSON.stringify(row);
-            WebCC.Events.fire("selected", JSON.stringify(row));
-            selectedEl.textContent = row.Text;
-            dropdown.remove();
-            optionsContainer = null;
-            isDropdownOpen = false;
-            arrow?.classList.remove("open");
-
-            // Stop interval check
-            if (closeCheckInterval) {
-                clearInterval(closeCheckInterval);
-                closeCheckInterval = null;
-            }
-        });
-
-        dropdown.appendChild(option);
+    // Filter on input
+    filterInput.addEventListener("input", () => {
+        const text = filterInput.value.toLowerCase();
+        const filtered = rows.filter(r => r.Text?.toLowerCase().includes(text));
+        renderOptions(filtered);
     });
+
+    // Initial render
+    renderOptions(currentRows);
 
 
     const estimatedDropdownHeight = Math.min(maxVisible * oneItemHeight, rows.length * oneItemHeight);

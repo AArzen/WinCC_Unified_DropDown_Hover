@@ -6,10 +6,11 @@
 
 ## 🚀 Features
 
-- Configurable width, height, font size, background color, text color, and hover color.
+- Configurable width, height, font size and font weight (15px, bold or 15px), background color, text color, and hover color.
 - Emits a `selected` event when an item is selected.
 - Dynamic population of dropdown items and current selection via properties.
 - Clean modular structure: `updateGraphics.js`, `webcc-init.js`, and `style.css` separated for maintainability.
+- Filter input to search by `Text` property
 
 ---
 

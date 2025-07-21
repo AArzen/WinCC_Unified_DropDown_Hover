@@ -2,6 +2,7 @@
     --dropdown-width: 250px;
     --dropdown-height: 30px;
     --dropdown-font-size: 15px;
+    --dropdown-font-weight: normal;
     --dropdown-bg: rgba(42, 47, 59, 1);
     --dropdown-hover-bg: rgba(50, 55, 65, 1);
     --dropdown-text-color: rgba(255, 255, 255, 1);
@@ -31,6 +32,7 @@ body {
     background-color: var(--dropdown-bg);
     color: var(--dropdown-text-color);
     font-size: var(--dropdown-font-size);
+    font-weight: var(--dropdown-font-weight);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -84,6 +86,7 @@ body {
     cursor: pointer;
     color: var(--dropdown-text-color);
     font-size: var(--dropdown-font-size);
+    font-weight: var(--dropdown-font-weight);
     white-space: normal;
     word-break: break-word;
     padding: 5px 10px;
@@ -95,4 +98,19 @@ body {
 
 .dropdown-option:hover {
     background-color: var(--dropdown-hover-bg);
+}
+
+.dropdown-filter-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px 10px;
+    font-size: var(--dropdown-font-size);
+    font-weight: var(--dropdown-font-weight);
+    font-family: inherit;
+    color: var(--dropdown-text-color);
+    background-color: var(--dropdown-bg);
+    border: none;
+    outline: none;
+    margin: 0;
+    height: var(--dropdown-height);
 }

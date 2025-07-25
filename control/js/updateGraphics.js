@@ -67,6 +67,7 @@ function applyStyles(props) {
 }
 
 function createDropdown(props, selectedWrapper, selectedEl, arrow) {
+
     if (isDropdownOpen && optionsContainer) return;
 
     const dropdown = document.createElement("div");
@@ -102,10 +103,12 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
     dropdown.style.paddingRight = getComputedStyle(selectedWrapper).paddingRight;
     dropdown.style.boxSizing = getComputedStyle(selectedWrapper).boxSizing;
     dropdown.style.width = `${scaleFixWidth}px`;
+    dropdown.style.maxWidth = `${scaleFixWidth}px`;
     dropdown.style.borderRadius = getComputedStyle(selectedWrapper).borderRadius || "5px";
     dropdown.style.border = "2px solid black";
     dropdown.style.maxHeight = `${totalHeight}px`;
     dropdown.style.overflowY = "auto";
+    dropdown.style.overflowX = "hidden";
 
     let rows = [];
     try {
@@ -122,10 +125,12 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
     filterInput.style.fontSize = scaleFixFontSize + "px";
     filterInput.style.fontFamily = getComputedStyle(selectedWrapper).fontFamily;
     filterInput.style.width = `${scaleFixWidth}px`;
+    filterInput.style.maxWidth = `${scaleFixWidth}px`;
     filterInput.style.border = "none";
     filterInput.style.outline = "none";
     filterInput.style.height = `${scaleFixHeight}px`;
     filterInput.style.lineHeight = `${scaleFixHeight}px`;
+    filterInput.style.boxSizing = "border-box";
     filterInput.style.padding = "0px 10px";
     dropdown.appendChild(filterInput);
 
@@ -321,6 +326,7 @@ function updateDropDown(props) {
     selectedWrapper.dataset.listenerSet = "true";
 
     selectedWrapper.addEventListener("click", (e) => {
+        if (!e.isTrusted) return;
         e.stopPropagation();
         createDropdown(props, selectedWrapper, selectedEl, arrow);
     });
@@ -350,6 +356,7 @@ var UnifiedInterface = (function () {
 })();
 
 function unifiedInterfaceInit() {
+
     try {
         const oldDropdowns = window.parent.document.querySelectorAll('.dropdown-options');
         oldDropdowns.forEach(el => {

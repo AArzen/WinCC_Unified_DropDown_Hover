@@ -1,10 +1,14 @@
 WebCC.start(
     function (ok) {
         if (ok) {
-            console.log("✅ WebCC connected - DropDown_Hover");
+            console.log(`✅ WebCC connected - DropDown`);
             unifiedInterfaceInit();
         } else {
-            console.error("❌ WebCC connection failed - DropDown_Hover");
+            console.error(`❌ WebCC connection failed - DropDown`);
+            const frame = window.frameElement;
+            if (frame) {
+                frame.style.display = "none";
+            }
         }
     },
     {
@@ -19,6 +23,9 @@ WebCC.start(
             ColorBackground: 4280090643,
             ColorHover: 4281608376,
             ColorText: 4294967295,
+            ColorBorder: 4278190080,
+            BorderWidth: 2,
+            BorderRadius: 5,
             VisibleItems: 5
         }
     },

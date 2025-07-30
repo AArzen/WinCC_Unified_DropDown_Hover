@@ -60,6 +60,18 @@
                         "$ref": "#/control/types/Color",
                         "default": 4294967295
                     },
+                    "ColorBorder": {
+                        "$ref": "#/control/types/Color",
+                        "default": 4278190080
+                    },
+                    "BorderWidth": {
+                        "type": "number",
+                        "default": 2
+                    },
+                    "BorderRadius": {
+                        "type": "number",
+                        "default": 5
+                    },
                     "VisibleItems": {
                         "type": "number",
                         "default": 5

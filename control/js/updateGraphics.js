@@ -1,5 +1,5 @@
 const _extensions = ['HMI'];
-const _timeout = 1000;
+const _timeout = 30000;
 
 let isDropdownOpen = false;
 let optionsContainer = null;
@@ -32,6 +32,8 @@ function applyStyles(props) {
     let fontSizeRaw = props.FontSize || "15px";
     const fontSize = parseFloat(fontSizeRaw);
     let fontWeight = "normal";
+    const borderWidth = props.BorderWidth || 2;
+    const borderRadius = props.BorderRadius || 5;
 
     if (fontSizeRaw.toLowerCase().includes("bold")) { fontWeight = "bold" };
 
@@ -48,6 +50,10 @@ function applyStyles(props) {
         ? toColor(WebCC.Properties.ColorHover)
         : 'rgba(50, 55, 65, 1)';
 
+    const borderColor = WebCC?.Properties?.ColorBorder !== undefined
+        ? toColor(WebCC.Properties.ColorBorder)
+        : 'rgba(0, 0, 0, 1)';
+
     root.style.setProperty('--dropdown-width', width + 'px');
     root.style.setProperty('--dropdown-height', height + 'px');
     root.style.setProperty('--dropdown-font-size', fontSize + 'px');
@@ -55,9 +61,14 @@ function applyStyles(props) {
     root.style.setProperty('--dropdown-bg', bgColor);
     root.style.setProperty('--dropdown-hover-bg', hoverColor);
     root.style.setProperty('--dropdown-text-color', fontColor);
+    root.style.setProperty('--dropdown-border-color', borderColor);
+    root.style.setProperty('--dropdown-border-width', borderWidth);
+    root.style.setProperty('--dropdown-border-radius', borderRadius);
 
     const wrapper = document.getElementById("selectedItem");
     if (wrapper) {
+        wrapper.style.border = `${borderWidth}px solid ${borderColor}`;
+        wrapper.style.borderRadius = `${borderRadius}px`;
         wrapper.style.width = width + "px";
         wrapper.style.height = height + "px";
         wrapper.style.fontSize = fontSize + "px";
@@ -67,6 +78,14 @@ function applyStyles(props) {
 }
 
 function createDropdown(props, selectedWrapper, selectedEl, arrow) {
+
+    // Clean old dropdown
+    document.querySelectorAll(".dropdown-options").forEach(el => {
+        const frame = window.frameElement;
+        if (!frame || !frame.ownerDocument.body.contains(el)) {
+            el.remove();
+        }
+    });
 
     if (isDropdownOpen && optionsContainer) return;
 
@@ -271,7 +290,7 @@ function createDropdown(props, selectedWrapper, selectedEl, arrow) {
             !dropdown.contains(target) &&
             !selectedWrapper.contains(target)
         ) {
-            console.log("Dropdown CLOSED (outside click)");
+            //console.log("Dropdown CLOSED (outside click)");
 
             dropdown.remove();
             optionsContainer = null;
@@ -335,12 +354,12 @@ function updateDropDown(props) {
 
 var UnifiedInterface = (function () {
     function initialize() {
-        console.log("DropDown: UnifiedInterface initialized");
+        // console.log("DropDown: UnifiedInterface initialized");
         updateDropDown(WebCC.Properties);
     }
 
     function setProps(data) {
-        console.log("DropDown: Property changed:", data.key, "=", data.value);
+        // console.log("DropDown: Property changed:", data.key, "=", data.value);
         if (WebCC.Properties.hasOwnProperty(data.key)) {
             WebCC.Properties[data.key] = data.value;
         }
@@ -360,7 +379,7 @@ function unifiedInterfaceInit() {
     try {
         const oldDropdowns = window.parent.document.querySelectorAll('.dropdown-options');
         oldDropdowns.forEach(el => {
-            console.log("DropDown: removing the old dropdown from the DOM");
+            //console.log("DropDown: removing the old dropdown from the DOM");
             el.remove();
         });
     } catch (err) {

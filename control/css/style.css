@@ -6,6 +6,9 @@
     --dropdown-bg: rgba(42, 47, 59, 1);
     --dropdown-hover-bg: rgba(50, 55, 65, 1);
     --dropdown-text-color: rgba(255, 255, 255, 1);
+    --dropdown-border-color: rgba(0, 0, 0, 1);
+    --dropdown-border-width: 2;
+    --dropdown-border-radius: 5;
 }
 
 body {
@@ -23,6 +26,9 @@ body {
     left: 0;
     width: var(--dropdown-width);
     height: var(--dropdown-height);
+    border-radius: var(--dropdown-border-radius)px;
+    border: var(--dropdown-border-width)px solid var(--dropdown-border-color);
+    box-sizing: border-box;
 }
 
 /* Selected area */
